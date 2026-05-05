@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ระบบเภสัช - Vibharam</title>
+
+  <!-- PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ระบบเภสัช">
+  <meta name="theme-color" content="#722ed1">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💊</text></svg>">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+      color: white;
+      z-index: 100;
+      transition: opacity 0.3s;
+    }
+
+    .loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-icon { font-size: 64px; }
+    .loading-text { font-size: 18px; font-weight: 500; }
+    .loading-sub { font-size: 13px; opacity: 0.8; }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .back-btn {
+      position: fixed;
+      top: 8px;
+      left: 8px;
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.95);
+      border: none;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      cursor: pointer;
+      font-size: 18px;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+
+    .back-btn.show { display: flex; }
+    .back-btn:active { transform: scale(0.92); }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    .error {
+      position: fixed;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 20px;
+      background: white;
+      z-index: 200;
+      text-align: center;
+    }
+
+    .error.show { display: flex; }
+    .error-icon { font-size: 56px; }
+    .error-title { font-size: 18px; font-weight: 600; color: #ff4d4f; }
+    .error-msg { font-size: 14px; color: #666; max-width: 400px; line-height: 1.5; }
+    .error-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .error-btn {
+      padding: 10px 20px;
+      background: #722ed1;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .error-btn-secondary {
+      background: white;
+      color: #666;
+      border: 1px solid #d9d9d9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="loading" id="loading">
+    <div class="loading-icon">💊</div>
+    <div class="spinner"></div>
+    <div class="loading-text">ระบบเภสัช</div>
+    <div class="loading-sub">Vibharam Laemchabang • กำลังโหลด...</div>
+  </div>
+
+  <button class="back-btn" id="backBtn" onclick="goHome()" title="กลับหน้าหลัก">←</button>
+
+  <iframe
+    id="app"
+    src="https://script.google.com/macros/s/AKfycbxLlBsoALGOttYx5HWcALtLOZZZP2PzGEHpKJNAL4RLpmugAV1skNFtnRJE3xLkH8s9/exec"
+    allow="camera; clipboard-write; fullscreen"
+    onload="onAppLoaded()">
+  </iframe>
+
+  <div class="error" id="error">
+    <div class="error-icon">⚠️</div>
+    <div class="error-title">เปิดระบบไม่ได้</div>
+    <div class="error-msg">
+      ไม่สามารถเชื่อมต่อระบบได้<br>
+      ลองเปิดในแท็บไม่ระบุตัวตน (Incognito)<br>
+      หรือ Sign out จาก Gmail บัญชีอื่นก่อน
+    </div>
+    <div class="error-actions">
+      <button class="error-btn" onclick="location.reload()">ลองใหม่</button>
+      <button class="error-btn error-btn-secondary" onclick="goHome()">กลับหน้าหลัก</button>
+    </div>
+  </div>
+
+  <script>
+    let loadTimeout;
+
+    function onAppLoaded() {
+      clearTimeout(loadTimeout);
+      setTimeout(() => {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('backBtn').classList.add('show');
+      }, 500);
+    }
+
+    function goHome() {
+      location.href = './';
+    }
+
+    loadTimeout = setTimeout(() => {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('backBtn').classList.add('show');
+    }, 30000);
+  </script>
+</body>
+</html>
